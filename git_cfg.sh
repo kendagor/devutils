@@ -23,9 +23,9 @@
 # WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 # Usage: sh git_cfg.sh "Your Name" "your@email" "username"
-git_name=\"$1\"
-git_email=\"$2\"
-git_username=\"$3\"
+git_name=$1
+git_email=$2
+git_username=$3
 git config --global push.default simple
 git config user.name $git_name
 git config user.email $git_email

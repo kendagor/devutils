@@ -91,7 +91,10 @@ if [ "$sync" = "true" ]; then
         checkfail $? "$llvm_src/tools directory not found"
 
         sudo svn co http://llvm.org/svn/llvm-project/cfe/trunk clang
-        checkfail $? "echo clang sync failed"
+        checkfail $? "clang sync failed"
+
+        cd $llvm_src/tools/clang/tools
+        checkfail $? "Directory not found $llvm_src/tools/clang/tools"
 
         sudo svn co http://llvm.org/svn/llvm-project/clang-tools-extra/trunk extra
         checkfail $? "clang-tools-extra sync failed"
@@ -109,8 +112,38 @@ if [ "$sync" = "true" ]; then
         checkfail $? "compiler-rt sync failed"
     else
         cd $llvm_src
-        sudo make update
-        checkfail $? "Sync failed"
+        sudo svn update
+        checkfail $? "llvm sync failed"
+
+        cd $llvm_src/tools/clang
+        checkfail $? "$llvm_src/tools/clang directory not found"
+
+        sudo svn update
+        checkfail $? "clang sync failed"
+
+        cd $llvm_src/tools/clang/tools/extra
+        checkfail $? "Directory not found $llvm_src/tools/clang/tools/extra"
+
+        sudo svn update
+        checkfail $? "clang-tools-extra sync failed"
+
+        cd $llvm_src/projects/libcxx
+        checkfail $? "$llvm_src/projects/libcxx directory not found"
+
+        sudo svn update
+        checkfail $? "libcxx sync failed"
+
+        cd $llvm_src/projects/libcxxabi
+        checkfail $? "$llvm_src/projects/libcxxabi directory not found"
+
+        sudo svn update
+        checkfail $? "libcxxabi sync failed"
+
+        cd $llvm_src/projects/compiler-rt
+        checkfail $? "$llvm_src/projects/compiler_rt directory not found"
+
+        sudo svn update
+        checkfail $? "compiler-rt sync failed"
     fi
 fi
 

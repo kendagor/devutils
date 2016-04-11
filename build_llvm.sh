@@ -163,5 +163,22 @@ checkfail $? "\"make\" failed"
 sudo make install
 checkfail $? "\"sudo make install\" failed"
 
+gcc-5 --version
+if [ $? = 0 ]; then
+    path_gcc5=/usr/bin/gcc-5
+    $path_gcc5 --version
+    if [ $? -gt 0 ]; then
+        path_gcc5=/usr/local/bin/gcc-5
+    fi
+    $path_gcc5 --version
+    if [ $? = 0 ]; then
+        sudo update-alternatives --install /usr/bin/gcc  gcc /usr/bin/gcc-5 10 --slave /usr/bin/g++ g++ /usr/bin/g++-5
+        checkfail $? "update-alternatives gcc gcc-5 failed"
+    fi
+fi
+
+sudo update-alternatives --install /usr/bin/gcc  gcc /usr/local/bin/clang 20 --slave /usr/bin/g++ g++ /usr/local/bin/clang++
+checkfail $? "update-alternatives gcc clang failed"
+
 cd $ret_dir
 

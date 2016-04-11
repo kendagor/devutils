@@ -68,7 +68,7 @@ if [ "$sync" = "true" ]; then
 fi
 
 rm -r $cmake_build
-mkdir $cmake_build
+mkdir -p $cmake_build
 checkfail $? "Failed: mkdir $cmake_build"
 
 cd $cmake_build

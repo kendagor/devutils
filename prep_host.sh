@@ -23,26 +23,39 @@
 # OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION
 # WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
-prep_src=/usr/local/src/devutils/linux
+prep_src=/usr/local/src/devutils
 ret_dir=$PWD
 copy_rc_files=false
 prefer_clang=false
 build_cmake=false
 build_openssl=false
 build_git=false
-fullprep=false;
+fullprep=false
+install_tools=false
+firewall_cfg=false
 
 while [ $# -gt 0 ]; do
     case $1 in
+        --src)
+            prep_src=$1
+            ;;
+        --firewall)
+            firewall_cfg=true
+            ;;
+        --install)
+            install_tools=true
+            ;;
         --full)
-            copy_rc_files=false
+            install_tools=true
+            copy_rc_files=true
             prefer_clang=true
             build_cmake=true
             build_openssl=true
             build_git=true
+            firewall_cfg=true
             ;;
         --rc)
-            copy_rc_files=false
+            copy_rc_files=true
             ;;
         --clang)
             prefer_clang=true
@@ -73,106 +86,119 @@ checkfail() {
     return
 }
 
-cd ~
-checkfail $? "Cannot cd ~"
-
 if [ "$copy_rc_files" = "true" ]; then
-    cp $prep_src/.bashrc .
-    checkfail $? "Could not copy .bashrc"
+    cd ~
+    checkfail $? "Cannot cd ~"
 
-    cp $prep_src/.bash_aliases .
-    checkfail $? "Could not copy .bash_aliases"
-
-    cp $prep_src/.gdbinit .
-    checkfail $? "Could not copy .gdbinit"
-
-    cp $prep_src/.inputrc .
-    checkfail $? "Could not copy .inputrc"
-
-    cp $prep_src/.nanorc .
-    checkfail $? "Could not copy .nanorc"
-
-    cp $prep_src/.vimrc .
-    checkfail $? "Could not copy .vimrc"
+    for file in \
+        .bashrc \
+        .bash_aliases \
+        .gdbinit \
+        .inputrc \
+        .nanorc \
+        .vimrc
+    do
+       if [ -f $file ]; then
+           cp $file $file.old
+           checkfail $? "Backing up $file failed"
+       fi
+       
+       cp $prep_src/$file .
+       checkfail $? "Copy file failed: $prep_src/$file"
+    done
 fi
 
-which sshd
-if [ $? -gt 0 ]; then
-    sudo apt-get install openssh-server -y
-    checkfail $? "Could not install openssh-server"
-fi
+if [ "$firewall_cfg" = "true" ]; then
+    sudo ufw allow netbios-ns
+    checkfail $? "ufw configure failed"
 
-which ssh
-if [ $? -gt 0 ]; then
-    sudo ufw allow ssh
+    sudo ufw allow netbios-dgm
+    checkfail $? "ufw configure failed"
+
+    sudo ufw allow netbios-ssn
+    checkfail $? "ufw configure failed"
+
+    sudo ufw default deny
+    checkfail $? "ufw configure failed"
+
+    sudo ufw enable
     checkfail $? "ufw configure failed"
 fi
 
-sudo ufw allow netbios-ns
-checkfail $? "ufw configure failed"
+if [ "$install_tools" = "true" ]; then
+    which sshd
+    if [ $? -gt 0 ]; then
+        sudo apt-get install openssh-server -y
+        checkfail $? "Could not install openssh-server"
+    fi
 
-sudo ufw allow netbios-dgm
-checkfail $? "ufw configure failed"
+    which ssh
+    if [ $? -gt 0 ]; then
+        sudo ufw allow ssh
+        checkfail $? "ufw configure failed"
+    fi
 
-sudo ufw allow netbios-ssn
-checkfail $? "ufw configure failed"
+    vim --version
+    if [ $? -gt 0 ]; then
+        sudo apt-get install vim -y
+        checkfail $? "Could not install vim"
+    fi
 
-sudo ufw default deny
-checkfail $? "ufw configure failed"
+    winbindd --version
+    if [ $? -gt 0 ]; then
+        sudo apt-get install winbind libnss-winbind -y
+        checkfail $? "Could not install winbind, libnss-winbind"
+    fi
 
-sudo ufw enable
-checkfail $? "ufw configure failed"
+    source-highlight --version
+    if [ $? -gt 0 ]; then
+        sudo apt-get install source-highlight -y
+        checkfail $? "Could not install source-highlight"
+    fi
 
-vim --version
-if [ $? -gt 0 ]; then
-    sudo apt-get install vim -y
-    checkfail $? "Could not install vim"
-fi
+    htop --version
+    if [ $? -gt 0 ]; then
+        sudo apt-get install htop -y
+        checkfail $? "Could not install htop"
+    fi
 
-winbindd --version
-if [ $? -gt 0 ]; then
-    sudo apt-get install winbind libnss-winbind -y
-    checkfail $? "Could not install winbind, libnss-winbind"
-fi
+    pkg-config --version
+    if [ $? -gt 0 ]; then
+        sudo apt-get install pkg-config -y
+        checkfail $? "Could not install pkg-config"
+    fi
 
-source-highlight --version
-if [ $? -gt 0 ]; then
-    sudo apt-get install source-highlight -y
-    checkfail $? "Could not install source-highlight"
-fi
+    automake --version
+    if [ $? -gt 0 ]; then
+        sudo apt-get install automake -y
+        checkfail $? "Could not install automake"
+    fi
 
-htop --version
-if [ $? -gt 0 ]; then
-    sudo apt-get install htop -y
-    checkfail $? "Could not install htop"
-fi
+    autoconf --version
+    if [ $? -gt 0 ]; then
+        sudo apt-get install autoconf -y
+        checkfail $? "Could not install autoconf"
+    fi
 
-pkg-config --version
-if [ $? -gt 0 ]; then
-    sudo apt-get install pkg-config -y
-    checkfail $? "Could not install pkg-config"
-fi
+    nodejs --version
+    if [ $? -gt 0 ]; then
+        # Node.js v5.x:
+        sudo curl -sL https://deb.nodesource.com/setup_4.x | sudo -E bash -
+        checkfail $? "Could not launch nodejs apt script"
 
-automake --version
-if [ $? -gt 0 ]; then
-    sudo apt-get install automake -y
-    checkfail $? "Could not install automake"
-fi
+        sudo apt-get install nodejs -y
+        checkfail $? "Could not install nodejs"
+    fi
 
-autoconf --version
-if [ $? -gt 0 ]; then
-    sudo apt-get install autoconf -y
-    checkfail $? "Could not install autoconf"
-fi
+    # gdb:
+    gdb --version
+    if [ $? -gt 0 ]; then
+        sudo apt-get install gdb -y
+        checkfail $? "gdb install failed"
 
-nodejs --version
-if [ $? -gt 0 ]; then
-    # Node.js v5.x:
-    sudo curl -sL https://deb.nodesource.com/setup_4.x | sudo -E bash -
-    checkfail $? "Could not launch nodejs apt script"
-
-    sudo apt-get install nodejs -y
-    checkfail $? "Could not install nodejs"
+        sudo apt-get install gdb64 -y
+        checkfail $? "gdb64 install failed"
+    fi
 fi
 
 if [ "$prefer_clang" = "false" ]; then
@@ -182,16 +208,6 @@ if [ "$prefer_clang" = "false" ]; then
         sudo apt-get install gcc-5 g++-5 -y
         checkfail $? "Could not install gcc-5, g++-5"
     fi
-fi
-
-# gdb:
-gdb --version
-if [ $? -gt 0 ]; then
-    sudo apt-get install gdb -y
-    checkfail $? "gdb install failed"
-
-    sudo apt-get install gdb64 -y
-    checkfail $? "gdb64 install failed"
 fi
 
 if [ "$prefer_clang" = "true" ]; then

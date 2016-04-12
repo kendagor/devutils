@@ -55,20 +55,17 @@ if [ "$install" = "true" ]; then
     cc --version
     checkfail $? "Please install your prefered c compiler"
     
-    sudo apt-get install zlib1g zlib1g-dev -y
-    checkfail $? "zlib install failed"
-    
-    sudo apt-get install libcurl4-nss-dev -y
-    checkfail $? "libcurl4-nss-dev install failed"
-    
-    sudo apt-get install libcurl4-openssl-dev -y
-    checkfail $? "libcurl4-openssl-dev install failed"
-    
-    sudo apt-get install libcurl4-gnutls-dev -y
-    checkfail $? "libcurl4-gnutls-dev install failed"
-    
-    sudo apt-get install libexpat1-dev -y
-    checkfail $? "libexpat1-dev install failed"    
+    for pkg in \
+        zlib1g \
+        zlib1g-dev \
+        libcurl4-nss-dev \
+        libcurl4-openssl-dev \
+        libcurl4-gnutls-dev \
+        libexpat1-dev;
+    do
+        sudo apt-get install $pkg -y
+        checkfail $? "Package install failed for: $pkg"
+    done
 fi
 
 if [ "$sync" = "true" ]; then

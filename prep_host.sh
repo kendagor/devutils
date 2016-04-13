@@ -96,7 +96,7 @@ if [ "$copy_rc_files" = "true" ]; then
         .gdbinit \
         .inputrc \
         .nanorc \
-        .vimrc
+        .vimrc;
     do
        if [ -f $file ]; then
            cp $file $file.old
@@ -109,14 +109,14 @@ if [ "$copy_rc_files" = "true" ]; then
 fi
 
 if [ "$firewall_cfg" = "true" ]; then
-    sudo ufw allow netbios-ns
-    checkfail $? "ufw configure failed"
-
-    sudo ufw allow netbios-dgm
-    checkfail $? "ufw configure failed"
-
-    sudo ufw allow netbios-ssn
-    checkfail $? "ufw configure failed"
+    for ufw_s in \
+        netbios-ns \
+        netbios-dgm \
+        netbios-ssn;
+    do
+        sudo ufw allow $ufs_s
+        checkfail $? "ufw configure failed for: $ufw_s"
+    done
 
     sudo ufw default deny
     checkfail $? "ufw configure failed"

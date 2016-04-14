@@ -23,7 +23,7 @@
 # OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION
 # WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
-prep_src=/usr/local/src/devutils
+prep_src=/usr/local/src/devutils_git
 ret_dir=$PWD
 copy_rc_files=false
 prefer_clang=false
@@ -36,9 +36,6 @@ firewall_cfg=false
 
 while [ $# -gt 0 ]; do
     case $1 in
-        --src)
-            prep_src=$1
-            ;;
         --firewall)
             firewall_cfg=true
             ;;
@@ -48,7 +45,7 @@ while [ $# -gt 0 ]; do
         --full)
             install_tools=true
             copy_rc_files=true
-            prefer_clang=true
+            # prefer_clang=true
             build_cmake=true
             build_openssl=true
             build_git=true
@@ -110,11 +107,12 @@ fi
 
 if [ "$firewall_cfg" = "true" ]; then
     for ufw_s in \
-        netbios-ns \
-        netbios-dgm \
-        netbios-ssn;
+        "ssh" \
+        "netbios-ns" \
+        "netbios-dgm" \
+        "netbios-ssn";
     do
-        sudo ufw allow $ufs_s
+        sudo ufw allow $ufw_s
         checkfail $? "ufw configure failed for: $ufw_s"
     done
 
@@ -130,12 +128,6 @@ if [ "$install_tools" = "true" ]; then
     if [ $? -gt 0 ]; then
         sudo apt-get install openssh-server -y
         checkfail $? "Could not install openssh-server"
-    fi
-
-    which ssh
-    if [ $? -gt 0 ]; then
-        sudo ufw allow ssh
-        checkfail $? "ufw configure failed"
     fi
 
     vim --version
@@ -253,17 +245,17 @@ if [ "$prefer_clang" = "true" ]; then
 fi
 
 if [ "$build_cmake" = "true" ]; then
-    sh $prep_src/build_cmake.sh
+    sh $prep_src/build_cmake.sh --install
     checkfail $? "Build cmake failed"
 fi
 
 if [ "$build_openssl" = "true" ]; then
-    sh $prep_src/build_openssl.sh
+    sh $prep_src/build_openssl.sh --install
     checkfail $? "Build openssl failed"
 fi
 
 if [ "$build_git" = "true" ]; then
-    sh $prep_src/build_git.sh
+    sh $prep_src/build_git.sh --install
     checkfail $? "Build git failed"
 fi
 

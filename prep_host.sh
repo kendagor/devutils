@@ -206,7 +206,7 @@ if [ "$prefer_clang" = "true" ]; then
     clang-3.9 --version
     if [ $? -gt 0 ]; then
         # LLVM: clang, clang++
-        echo deb http://llvm.org/apt/wily/ llvm-toolchain-wily main | sudo tee /etc/apt/sources.list.d/llvm-toolchain.list
+        echo deb http://llvm.org/apt/xenial/ llvm-toolchain-xenial main | sudo tee /etc/apt/sources.list.d/llvm-toolchain.list
         checkfail $? "Could not create /etc/apt/sources.list.d/llvm-toolchain.list"
 
         wget -O - http://llvm.org/apt/llvm-snapshot.gpg.key|sudo apt-key add -

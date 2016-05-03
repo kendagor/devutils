@@ -218,22 +218,22 @@ if [ "$prefer_clang" = "true" ]; then
         sudo apt-get install clang-3.9 lldb-3.9 -y --force-yes
         checkfail $? "Could not install clang-3.9, lldb-3.9"
 
-        gcc-5 --version
+        gcc --version
         if [ $? = 0 ]; then
-            path_gcc5=/usr/bin/gcc-5
-            $path_gcc5 --version
+            path_gcc=/usr/bin
+            $path_gcc/gcc --version
             if [ $? -gt 0 ]; then
-                path_gcc5=/usr/local/bin/gcc-5
+                path_gcc=/usr/local/bin
             fi
-            $path_gcc5 --version
+            $path_gcc/gcc --version
             if [ $? = 0 ]; then
-                sudo update-alternatives --install /usr/bin/gcc  gcc /usr/bin/gcc-5 10 --slave /usr/bin/g++-5 g++ /usr/bin/g++-5
-                checkfail $? "update-alternatives gcc gcc-5 failed"
+                sudo update-alternatives --install /usr/bin/cc cc $path_gcc/gcc 10 --slave /usr/bin/c++ c++ $path_gcc/g++
+                checkfail $? "update-alternatives cc -> gcc failed"
             fi
         fi
 
-        sudo update-alternatives --install /usr/bin/gcc  gcc /usr/bin/clang-3.9 20 --slave /usr/bin/g++ g++ /usr/bin/clang++-3.9
-        checkfail $? "update-alternatives gcc clang-3.9 failed"
+        sudo update-alternatives --install /usr/bin/cc cc /usr/bin/clang-3.9 20 --slave /usr/bin/c++ c++ /usr/bin/clang++-3.9
+        checkfail $? "update-alternatives cc -> clang-3.9 failed"
 
         # Remove the "--slave ..." command extension above to set individually:
         #sudo update-alternatives --install /usr/bin/g++  g++ /usr/bin/g++-5 10

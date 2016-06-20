@@ -28,6 +28,7 @@ ret_dir=$PWD
 install=false
 sync=false
 ld_conf_src=/etc/ld.so.conf.d/x86_64-linux-gnu.conf
+prefix_override=false
 
 while [ $# -gt 0 ]; do
     case $1 in
@@ -37,6 +38,9 @@ while [ $# -gt 0 ]; do
             ;;
         -s | --sync)
             sync=true
+            ;;
+        -p | --prefix)
+            prefix_override=true
             ;;
     esac
     shift
@@ -105,6 +109,9 @@ if [ "$install" = "true" ]; then
     sudo apt-get install libisl-dev -y
     checkfail $? "Install libisl-dev failed"
 
+    sudo apt-get install libc6-dev-x32 -y
+    checkfail $? "install libc6-dev-x32 failed"
+
     flex --version
     if [ $? -gt 0 ]; then
         sudo apt-get install flex -y
@@ -126,27 +133,36 @@ fi
 ls -d $gcc_src
 checkfail $? "gcc source not found: $gcc_src"
 
-rm -r $gcc_build
+if [ -f $gcc_build ]; then
+    sudo rm -r $gcc_build
+    checkfail $? "Failed to delete $gcc_build"
+fi
 mkdir -p $gcc_build
 checkfail $? "Could not create $gcc_build"
 
 cd $gcc_build
 checkfail $? "Could not cd $gcc_build"
 
-$gcc_src/configure \
+if [ "$prefix_override" = "true" ]; then
+    new_prefix="--prefix=/usr/bin"
+fi
+
+$gcc_src/configure $new_prefix \
     --enable-languages=c,c++ \
+    --enable-shared \
+    --enable-host-shared \
     --with-gmp \
     --with-mpfr \
     --with-mpc \
     --with-isl \
+    --enable-multilib \
     --disable-werror \
-    --disable-multilib \
     --disable-bootstrap
 
 checkfail $? "\'configure\' failed"
 
 # make -j 4 bootstrap-lean
-make -j 4
+make -j 8
 checkfail $? "\'make\' failed"
 
 sudo make install

@@ -110,7 +110,11 @@ if [ "$firewall_cfg" = "true" ]; then
         "ssh" \
         "netbios-ns" \
         "netbios-dgm" \
-        "netbios-ssn";
+        "netbios-ssn" \
+        "samba" \
+        "in on any to ff01::1" \
+        "in on any to 224.0.0.1" \
+        "in on any to 224.0.0.254";
     do
         sudo ufw allow $ufw_s
         checkfail $? "ufw configure failed for: $ufw_s"

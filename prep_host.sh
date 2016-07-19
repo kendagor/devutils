@@ -23,9 +23,11 @@
 # OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION
 # WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
-prep_src=/usr/local/src/devutils_git
+prep_src=~/src/devutils
 ret_dir=$PWD
 copy_rc_files=false
+install_gcc=false
+install_clang=false
 prefer_clang=false
 build_cmake=false
 build_openssl=false
@@ -39,13 +41,14 @@ while [ $# -gt 0 ]; do
         --firewall)
             firewall_cfg=true
             ;;
-        --install)
+        --tools)
             install_tools=true
             ;;
         --full)
             install_tools=true
             copy_rc_files=true
-            # prefer_clang=true
+            install_gcc=true
+            install_clang=true
             build_cmake=true
             build_openssl=true
             build_git=true
@@ -55,7 +58,11 @@ while [ $# -gt 0 ]; do
             copy_rc_files=true
             ;;
         --clang)
+            install_clang=true
             prefer_clang=true
+            ;;
+        --gcc)
+            install_gcc=true
             ;;
         --build)
             build_cmake=true
@@ -130,49 +137,49 @@ fi
 if [ "$install_tools" = "true" ]; then
     which sshd
     if [ $? -gt 0 ]; then
-        sudo apt-get install openssh-server -y
+        sudo apt install openssh-server -y
         checkfail $? "Could not install openssh-server"
     fi
 
     vim --version
     if [ $? -gt 0 ]; then
-        sudo apt-get install vim -y
+        sudo apt install vim -y
         checkfail $? "Could not install vim"
     fi
 
     winbindd --version
     if [ $? -gt 0 ]; then
-        sudo apt-get install winbind libnss-winbind -y
+        sudo apt install winbind libnss-winbind -y
         checkfail $? "Could not install winbind, libnss-winbind"
     fi
 
     source-highlight --version
     if [ $? -gt 0 ]; then
-        sudo apt-get install source-highlight -y
+        sudo apt install source-highlight -y
         checkfail $? "Could not install source-highlight"
     fi
 
     htop --version
     if [ $? -gt 0 ]; then
-        sudo apt-get install htop -y
+        sudo apt install htop -y
         checkfail $? "Could not install htop"
     fi
 
     pkg-config --version
     if [ $? -gt 0 ]; then
-        sudo apt-get install pkg-config -y
+        sudo apt install pkg-config -y
         checkfail $? "Could not install pkg-config"
     fi
 
     automake --version
     if [ $? -gt 0 ]; then
-        sudo apt-get install automake -y
+        sudo apt install automake -y
         checkfail $? "Could not install automake"
     fi
 
     autoconf --version
     if [ $? -gt 0 ]; then
-        sudo apt-get install autoconf -y
+        sudo apt install autoconf -y
         checkfail $? "Could not install autoconf"
     fi
 
@@ -182,31 +189,31 @@ if [ "$install_tools" = "true" ]; then
         sudo curl -sL https://deb.nodesource.com/setup_4.x | sudo -E bash -
         checkfail $? "Could not launch nodejs apt script"
 
-        sudo apt-get install nodejs -y
+        sudo apt install nodejs -y
         checkfail $? "Could not install nodejs"
     fi
 
     # gdb:
     gdb --version
     if [ $? -gt 0 ]; then
-        sudo apt-get install gdb -y
+        sudo apt install gdb -y
         checkfail $? "gdb install failed"
 
-        sudo apt-get install gdb64 -y
-        checkfail $? "gdb64 install failed"
+        #sudo apt install gdb64 -y
+        #checkfail $? "gdb64 install failed"
     fi
 fi
 
-if [ "$prefer_clang" = "false" ]; then
+if [ "$install_gcc" = "true" ]; then
     # gcc-5, g++-5:
     gcc-5 --version
     if [ $? -gt 0 ]; then
-        sudo apt-get install gcc-5 g++-5 -y
+        sudo apt install gcc-5 g++-5 -y
         checkfail $? "Could not install gcc-5, g++-5"
     fi
 fi
 
-if [ "$prefer_clang" = "true" ]; then
+if [ "$install_clang" = "true" ]; then
     clang-3.9 --version
     if [ $? -gt 0 ]; then
         # LLVM: clang, clang++
@@ -216,23 +223,25 @@ if [ "$prefer_clang" = "true" ]; then
         wget -O - http://llvm.org/apt/llvm-snapshot.gpg.key|sudo apt-key add -
         checkfail $? "Could not install llvm-toolchain apt key"
 
-        sudo apt-get update
-        checkfail $? "Failed apt-get update"
+        sudo apt update
+        checkfail $? "Failed apt update"
 
-        sudo apt-get install clang-3.9 lldb-3.9 -y --force-yes
+        sudo apt install clang-3.9 lldb-3.9 -y --force-yes
         checkfail $? "Could not install clang-3.9, lldb-3.9"
 
-        gcc --version
-        if [ $? = 0 ]; then
-            path_gcc=/usr/bin
-            $path_gcc/gcc --version
-            if [ $? -gt 0 ]; then
-                path_gcc=/usr/local/bin
-            fi
-            $path_gcc/gcc --version
+        if [ "$prefer_clang" = "true" ]; then
+            gcc --version
             if [ $? = 0 ]; then
-                sudo update-alternatives --install /usr/bin/cc cc $path_gcc/gcc 10 --slave /usr/bin/c++ c++ $path_gcc/g++
-                checkfail $? "update-alternatives cc -> gcc failed"
+                path_gcc=/usr/bin
+                $path_gcc/gcc --version
+                if [ $? -gt 0 ]; then
+                    path_gcc=/usr/local/bin
+                fi
+                $path_gcc/gcc --version
+                if [ $? = 0 ]; then
+                   sudo update-alternatives --install /usr/bin/cc cc $path_gcc/gcc 10 --slave /usr/bin/c++ c++ $path_gcc/g++
+                   checkfail $? "update-alternatives cc -> gcc failed"
+                fi
             fi
         fi
 

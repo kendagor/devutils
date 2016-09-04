@@ -27,6 +27,7 @@ llvm_build=~/build/llvm/build
 ret_dir=$PWD
 install=false
 sync=false
+alt=true
 
 while [ $# -gt 0 ]; do
     case $1 in
@@ -36,6 +37,9 @@ while [ $# -gt 0 ]; do
             ;;
         -s | --sync)
             sync=true
+            ;;
+        -n | --noalt)
+            alt=false
             ;;
     esac
     shift
@@ -157,28 +161,25 @@ checkfail $? "Unable to cd $llvm_build"
 cmake -G "Unix Makefiles" -DCMAKE_BUILD_TYPE=Release $llvm_src
 checkfail $? "cmake failed"
 
-make -j 4
+make -j 8
 checkfail $? "\"make\" failed"
 
 sudo make install
 checkfail $? "\"sudo make install\" failed"
 
-gcc-5 --version
-if [ $? = 0 ]; then
-    path_gcc5=/usr/bin/gcc-5
-    $path_gcc5 --version
-    if [ $? -gt 0 ]; then
-        path_gcc5=/usr/local/bin/gcc-5
-    fi
-    $path_gcc5 --version
+if [ "$alt" = true ]; then
+    path_gcc=$(which gcc)
     if [ $? = 0 ]; then
-        sudo update-alternatives --install /usr/bin/gcc  gcc /usr/bin/gcc-5 10 --slave /usr/bin/g++ g++ /usr/bin/g++-5
-        checkfail $? "update-alternatives gcc gcc-5 failed"
+        path_cpp=$(which g++)
+        if [ $? = 0 ]; then
+            sudo update-alternatives --install /usr/bin/gcc  gcc $path_gcc 10 --slave /usr/bin/g++ g++ $path_cpp
+            checkfail $? "update-alternatives gcc, g++ failed. Paths: $path_gcc; $path_cpp"
+        fi
     fi
+    
+    sudo update-alternatives --install /usr/bin/gcc  gcc /usr/local/bin/clang 20 --slave /usr/bin/g++ g++ /usr/local/bin/clang++
+    checkfail $? "update-alternatives gcc clang failed"
 fi
-
-sudo update-alternatives --install /usr/bin/gcc  gcc /usr/local/bin/clang 20 --slave /usr/bin/g++ g++ /usr/local/bin/clang++
-checkfail $? "update-alternatives gcc clang failed"
 
 cd $ret_dir
 

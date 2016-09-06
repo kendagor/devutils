@@ -186,7 +186,7 @@ if [ "$install_tools" = "true" ]; then
     nodejs --version
     if [ $? -gt 0 ]; then
         # Node.js v5.x:
-        sudo curl -sL https://deb.nodesource.com/setup_4.x | sudo -E bash -
+        sudo curl -sL https://deb.nodesource.com/setup_6.x | sudo -E bash -
         checkfail $? "Could not launch nodejs apt script"
 
         sudo apt install nodejs -y

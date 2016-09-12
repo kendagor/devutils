@@ -100,7 +100,8 @@ if [ "$copy_rc_files" = "true" ]; then
         .gdbinit \
         .inputrc \
         .nanorc \
-        .vimrc;
+        .vimrc \
+        .tmux.conf;
     do
        if [ -f $file ]; then
            cp $file $file.old

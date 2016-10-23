@@ -27,7 +27,7 @@ llvm_build=~/build/llvm/build
 ret_dir=$PWD
 install=false
 sync=false
-alt=true
+alt=false
 
 while [ $# -gt 0 ]; do
     case $1 in
@@ -38,8 +38,8 @@ while [ $# -gt 0 ]; do
         -s | --sync)
             sync=true
             ;;
-        -n | --noalt)
-            alt=false
+        -n | --alt)
+            alt=true
             ;;
     esac
     shift

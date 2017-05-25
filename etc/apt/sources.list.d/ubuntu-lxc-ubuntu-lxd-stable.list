@@ -1,5 +1,0 @@
-deb http://ppa.launchpad.net/ubuntu-lxc/lxc-stable/ubuntu yakkety main
-# deb-src http://ppa.launchpad.net/ubuntu-lxc/lxc-stable/ubuntu yakkety main
-
-deb http://ppa.launchpad.net/ubuntu-lxc/lxd-stable/ubuntu yakkety main
-# deb-src http://ppa.launchpad.net/ubuntu-lxc/lxd-stable/ubuntu yakkety main

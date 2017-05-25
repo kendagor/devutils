@@ -1,8 +1,7 @@
 #! bash
-
-# build_cmake.sh - A script for building cmake
+# build_cryptopp.sh - A script for building libcrypto++
 #
-# Copyright (c) 2016 Elisha Kendagor kosistudio@live.com
+# Copyright (c) 2017 Elisha Kendagor kosistudio@live.com
 #
 # Permission is hereby granted, free of charge, to any person obtaining
 # a copy of this software and associated documentation files (the
@@ -23,9 +22,10 @@
 # OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION
 # WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
-cmake_src=/usr/local/src/cmake
-cmake_build=~/build/cmake
-ret_dir=$PWD
+git_src=/usr/local/src/cryptopp
+build_dir=~/build
+bin_dir=$build_dir/cryptopp
+curr_dir=$PWD
 install=false
 sync=false
 
@@ -45,45 +45,46 @@ done
 checkfail() {
     if [ $1 -gt 0 ]; then
         echo $2
-        exit $1
+        exit 1
     fi
     return
 }
 
 if [ "$install" = "true" ]; then
     cc --version
-    checkfail $? "Please install your preferred c, c++ compilers"
+    checkfail $? "Please install your prefered c compiler"
 fi
 
 if [ "$sync" = "true" ]; then
-    ls -d $cmake_src
+    ls -d $git_src    
     if [ $? -gt 0 ]; then
-        sudo git clone https://github.com/Kitware/CMake.git $cmake_src
-        checkfail $? "Clone failed"
+        sudo git clone https://github.com/weidai11/cryptocpp.git $git_src
+        checkfail $? "Sync failed"
     else
-        cd $cmake_src
+        cd $git_src
         sudo git pull
         checkfail $? "Sync failed"
     fi
 fi
 
-if [ -f $cmake_build ]; then
-    rm -r $cmake_build
-fi
-mkdir -p $cmake_build
-checkfail $? "Failed: mkdir $cmake_build"
+rm -r $bin_dir
+mkdir -p $build_dir
+checkfail $? "Build directory creation failed"
 
-cd $cmake_build
-checkfail $? "Couldn\'t locate the build directory: $cmake_build"
+cd $build_dir
+checkfail $? "Unable to cd $build_dir"
 
-$cmake_src/bootstrap --parallel=8
-checkfail $? "bootstrap failed"
+cp --recursive --symbolic-link $git_src .
+checkfail $? "Unable to copy src links to $bin_dir"
+
+cd $bin_dir
+checkfail $? "Unable to cd $bin_dir"
 
 make -j 8
-checkfail $? "make failed"
+checkfail $? "Build failed"
 
 sudo make install
-checkfail $? "make install failed"
+checkfail $? "Install failed"
 
-cd $ret_dir
+cd $curr_dir
 

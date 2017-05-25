@@ -46,3 +46,9 @@ ufw allow  5222/tcp
 ufw allow  5223/tcp
 ufw allow  5280/tcp
 
+# POP3 - Recommending IMAP
+# ufw allow 110/tcp
+# ufw allow 995/tcp
+
+# SMTP - Recommending IMAP
+# ufw allow 587/tcp

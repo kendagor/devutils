@@ -1,0 +1,3 @@
+deb http://ppa.launchpad.net/inkscape.dev/trunk/ubuntu zesty main
+# deb http://ppa.launchpad.net/inkscape.dev/stable/ubuntu zesty main
+# deb-src http://ppa.launchpad.net/inkscape.dev/stable/ubuntu zesty main

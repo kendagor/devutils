@@ -22,6 +22,6 @@ sudo add-apt-repository ppa:ubuntu-lxc/lxd-stable
 
 sudo add-apt-repository ppa:wireshark-dev/stable
 
-deb http://apt.postgresql.org/pub/repos/apt/ zesty-pgdg main
+echo "deb http://apt.postgresql.org/pub/repos/apt/ zesty-pgdg main" | sudo tee /etc/apt/sources.list.d/postgresql.list
 wget --quiet -O - https://www.postgresql.org/media/keys/ACCC4CF8.asc | sudo apt-key add -
 

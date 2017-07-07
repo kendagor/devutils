@@ -162,7 +162,7 @@ $gcc_src/configure $new_prefix \
 checkfail $? "\'configure\' failed"
 
 # make -j 4 bootstrap-lean
-make -j 8
+make -j 4
 checkfail $? "\'make\' failed"
 
 sudo make install

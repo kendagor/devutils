@@ -161,7 +161,7 @@ checkfail $? "Unable to cd $llvm_build"
 cmake -G "Unix Makefiles" -DCMAKE_BUILD_TYPE=Release $llvm_src
 checkfail $? "cmake failed"
 
-make -j 8
+make -j 4
 checkfail $? "\"make\" failed"
 
 sudo make install

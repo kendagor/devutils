@@ -57,8 +57,8 @@ if [ "$install" = "true" ]; then
     sudo apt-get install python2.7 -y
     checkfail $? "Install python2.7 failed"
 
-    sudo apt-get install python3.5 -y
-    checkfail $? "Install python3.5 failed"
+    sudo apt-get install python3 -y
+    checkfail $? "Install python3 failed"
 
     svn --version
     if [ $? -gt 0 ]; then

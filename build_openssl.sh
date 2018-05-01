@@ -80,7 +80,7 @@ checkfail $? "Unable to copy src links to $build_dir/openssl"
 cd $bin_dir
 checkfail $? "Unable to cd $bin_dir"
 
-./config no-deprecated shared
+./config shared
 checkfail $? "config failed"
 
 make -j 4

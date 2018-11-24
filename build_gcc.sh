@@ -147,6 +147,18 @@ if [ "$prefix_override" = "true" ]; then
     new_prefix="--prefix=/usr/bin"
 fi
 
+# $gcc_src/configure $new_prefix \
+#     --enable-languages=c,c++ \
+#     --enable-shared \
+#     --enable-host-shared \
+#     --with-gmp \
+#     --with-mpfr \
+#     --with-mpc \
+#     --with-isl \
+#     --enable-multilib \
+#     --disable-werror \
+#     --disable-bootstrap
+
 $gcc_src/configure $new_prefix \
     --enable-languages=c,c++ \
     --enable-shared \
@@ -155,9 +167,9 @@ $gcc_src/configure $new_prefix \
     --with-mpfr \
     --with-mpc \
     --with-isl \
-    --enable-multilib \
     --disable-werror \
     --disable-bootstrap
+
 
 checkfail $? "\'configure\' failed"
 
@@ -168,13 +180,13 @@ checkfail $? "\'make\' failed"
 sudo make install
 checkfail $? "\'make install\' failed"
 
-grep --regexp="^# Multiarch support$" $ld_conf_src
-checkfail $? "ldconfig cfg file doesn\'t have the expected first line"
+# grep --regexp="^# Multiarch support$" $ld_conf_src
+# checkfail $? "ldconfig cfg file doesn\'t have the expected first line"
 
-grep --regexp="^/usr/local/lib64$" $ld_conf_src
-if [ $? -gt 0 ]; then
-    sudo sed -i "/^# Multiarch support$/a/usr/local/lib64" $ld_conf_src
-fi
+# grep --regexp="^/usr/local/lib64$" $ld_conf_src
+# if [ $? -gt 0 ]; then
+#     sudo sed -i "/^# Multiarch support$/a/usr/local/lib64" $ld_conf_src
+# fi
 
 sudo ldconfig
 checkfail $? "\'ldconfig\' failed"

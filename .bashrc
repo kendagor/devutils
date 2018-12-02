@@ -116,9 +116,6 @@ if ! shopt -oq posix; then
   fi
 fi
 
-# Uncomment if installing .NET Core doesn't append this automatically
-#[ -s "/home/elisha/.dnx/dnvm/dnvm.sh" ] && . "/home/elisha/.dnx/dnvm/dnvm.sh" # Load dnvm
-
 # Enable syntax highlighting once you install gnu source-highlight
 export LESSOPEN="| /usr/share/source-highlight/src-hilite-lesspipe.sh %s"
 export LESS=' -RN '

@@ -119,3 +119,5 @@ fi
 # Enable syntax highlighting once you install gnu source-highlight
 export LESSOPEN="| /usr/share/source-highlight/src-hilite-lesspipe.sh %s"
 export LESS=' -RN '
+
+set -o ignoreeof

@@ -89,5 +89,7 @@ checkfail $? "make failed"
 sudo make install
 checkfail $? "make install failed"
 
+sudo ldconfig
+
 cd $curr_dir
 

@@ -1,0 +1,20 @@
+# A template for a typical service. Tested in Ubuntu
+# Copy the file to /etc/systemd/system
+# After copying enable service: sudo systemctl enable my_service
+
+[Unit]
+Description=abc service description
+After=syslog.target
+After=network.target
+
+[Service]
+RestartSec=2s
+Type=simple
+User=abc
+Group=abc
+WorkingDirectory=abcd
+ExecStart=abcde command line
+Restart=always
+
+[Install]
+WantedBy=multi-user.target

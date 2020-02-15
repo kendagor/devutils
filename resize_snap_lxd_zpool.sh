@@ -13,3 +13,5 @@ sudo truncate -s $2G $imgpath
 # Make zfs realize the fact that partition has been changed and make zpool
 # use the new partition which is actually the same one
 sudo zpool online -e $1 $imgpath $imgpath
+
+sudo zfs set quota=none $1

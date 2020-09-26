@@ -33,31 +33,34 @@ if [ -f /usr/local/bin/clang++ ]; then
 fi
 
 update_alternatives() {
-    if [ -f $3 ]; then
-        sudo update-alternatives --install /usr/bin/$1 $2 $3 $4
-        checkfail $? "Failed: sudo update-alternatives --install /usr/bin/$1 $2 $3 $4"
+    # 1: alias
+    # 2: target file
+    # 3: priority
+    if [ -f $2 ]; then
+        sudo update-alternatives --install /usr/bin/$1 $1 $2 $3
+        checkfail $? "Failed: sudo update-alternatives --install /usr/bin/$1 $1 $2 $3"
         return
     fi
-    echo "update-alternatives skipped because '$3' doesn't exist"
+    echo "update-alternatives skipped because '$2' doesn't exist"
 }
 
-update_alternatives /usr/bin/gcc gcc /usr/bin/gcc-9 10
-update_alternatives /usr/bin/gcc gcc /usr/bin/gcc-10 20
-update_alternatives /usr/bin/gcc gcc /usr/local/bin/gcc-dev 30
+update_alternatives gcc /usr/bin/gcc-9 10
+update_alternatives gcc /usr/bin/gcc-10 20
+update_alternatives gcc /usr/local/bin/gcc-dev 30
 
-update_alternatives /usr/bin/g++ g++ /usr/bin/g++-9 10
-update_alternatives /usr/bin/g++ g++ /usr/bin/g++-10 20
-update_alternatives /usr/bin/g++ g++ /usr/local/bin/g++-dev 30
+update_alternatives g++ /usr/bin/g++-9 10
+update_alternatives g++ /usr/bin/g++-10 20
+update_alternatives g++ /usr/local/bin/g++-dev 30
 
-update_alternatives /usr/bin/clang clang /usr/lib/llvm-10/bin/clang 10
-update_alternatives /usr/bin/clang clang /usr/local/bin/clang-dev 20
+update_alternatives clang /usr/lib/llvm-10/bin/clang 10
+update_alternatives clang /usr/local/bin/clang-dev 20
 
-update_alternatives /usr/bin/clang++ clang++ /usr/lib/llvm-10/bin/clang++ 10
-update_alternatives /usr/bin/clang++ clang++ /usr/local/bin/clang++-dev 20
+update_alternatives clang++ /usr/lib/llvm-10/bin/clang++ 10
+update_alternatives clang++ /usr/local/bin/clang++-dev 20
 
-update_alternatives /usr/bin/cc cc /usr/bin/clang 10
-update_alternatives /usr/bin/cc cc /usr/bin/gcc 20
+update_alternatives cc /usr/bin/clang 10
+update_alternatives cc /usr/bin/gcc 20
 
-update_alternatives /usr/bin/c++ c++ /usr/bin/clang++ 10
-update_alternatives /usr/bin/c++ c++ /usr/bin/g++ 20
+update_alternatives c++ /usr/bin/clang++ 10
+update_alternatives c++ /usr/bin/g++ 20
 

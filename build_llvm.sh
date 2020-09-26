@@ -158,7 +158,9 @@ checkfail $? "Build directory creation failed"
 cd $llvm_build
 checkfail $? "Unable to cd $llvm_build"
 
-cmake -G "Unix Makefiles" -DCMAKE_BUILD_TYPE=Release $llvm_src
+cmake -DLLVM_ENABLE_PROJECTS="clang;libcxxlibcxxabi" \
+      -G "Unix Makefiles" \
+      -DCMAKE_BUILD_TYPE=Release $llvm_src
 checkfail $? "cmake failed"
 
 make -j 36

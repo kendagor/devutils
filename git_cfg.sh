@@ -27,6 +27,7 @@ git_name=$1
 git_email=$2
 git_username=$3
 git config --global push.default simple
+git config credential.helper store
 git config user.name $git_name
 git config user.email $git_email
 git config credential.https://github.com.username $git_username

@@ -55,66 +55,78 @@ checkfail() {
 }
 
 if [ "$install" = "true" ]; then
-    svn --version
+    bison --version
     if [ $? -gt 0 ]; then
-        sudo apt-get install subversion -y
+        sudo apt install bison -y
         checkfail $? "Install svn failed"
+    fi
+
+    perl --version
+    if [ $? -gt 0 [; then
+        sudo apt install perl -y
+        checkfail $? "Install perl failed"
     fi
 
     make --version
     if [ $? -gt 0 ]; then
-        sudo apt-get install make -y
+        sudo apt install make -y
         checkfail $? "Install make failed"
     fi
 
-    sudo apt-get install binutils -y
+    sudo apt install binutils -y
     checkfail $? "Install binutils failed"
 
     bzip2 --version
     if [ $? -gt 0 ]; then
-        sudo apt-get install bzip2 -y
+        sudo apt install bzip2 -y
         checkfail $? "Install bzip2 failed"
     fi
 
     gzip --version
     if [ $? -gt 0 ]; then
-        sudo apt-get install gzip -y
+        sudo apt install gzip -y
         checkfail $? "Install gzip failed"
     fi
 
     tar --version
     if [ $? -gt 0 ]; then
-        sudo apt-get install tar -y
+        sudo apt install tar -y
         checkfail $? "Install tar failed"
     fi
 
     gawk --version
     if [ $? -gt 0 ]; then
-        sudo apt-get install gawk -y
+        sudo apt install gawk -y
         checkfail $? "Install gawk failed"
     fi
 
-    sudo apt-get install libc6-dev -y
+    gettext --version
+    if [ $? -gt 0 ]; then
+        sudo apt install gettext -y
+        checkfail $? "Install gettext failed"
+    fi
+
+    sudo apt install libc6-dev -y
     checkfail $? "Install libc6-dev failed"
 
-    sudo apt-get install libgmp-dev -y
+    sudo apt install libgmp-dev -y
     checkfail $? "Install libgmp-dev failed"
 
-    sudo apt-get install libmpfr-dev -y
+    sudo apt install libmpfr-dev -y
     checkfail $? "Install libmpfr-dev failed"
 
-    sudo apt-get install libmpc-dev -y
+    sudo apt install libmpc-dev -y
     checkfail $? "Install libmpc-dev failed"
 
-    sudo apt-get install libisl-dev -y
+    sudo apt install libisl-dev -y
     checkfail $? "Install libisl-dev failed"
 
-    sudo apt-get install libc6-dev-x32 -y
+    sudo apt install libc6-dev-x32 -y
     checkfail $? "install libc6-dev-x32 failed"
 
     flex --version
     if [ $? -gt 0 ]; then
-        sudo apt-get install flex -y
+        sudo apt install flex -y
         checkfail $? "Install flex failed"
     fi
 fi
@@ -122,11 +134,13 @@ fi
 if [ "$sync" = "true" ]; then
     ls -d $gcc_src
     if [ $? -gt 0 ]; then
-        sudo svn checkout svn://gcc.gnu.org/svn/gcc/trunk $gcc_src
-        checkfail $? "sudo svn checkout failed"
+        sudo git clone https://gcc.gnu.org/git/gcc.git $gcc_src
+        checkfail $? "git clone failed"
     else
-        sudo svn update $gcc_src
-        checkfail $? "sudo svn update failed"
+        pwd_tmp = $PWD
+        cd $gcc_src
+        sudo git pull
+        checkfail $? "git pull failed"
     fi
 fi
 
@@ -168,7 +182,8 @@ $gcc_src/configure $new_prefix \
     --with-mpc \
     --with-isl \
     --disable-werror \
-    --disable-bootstrap
+    --disable-bootstrap \
+    --disable-multilib
 
 
 checkfail $? "\'configure\' failed"
@@ -190,6 +205,10 @@ checkfail $? "\'make install\' failed"
 
 sudo ldconfig
 checkfail $? "\'ldconfig\' failed"
+
+sudo mv /usr/local/bin/gcc /usr/local/bin/gcc-dev
+sudo mv /usr/local/bin/g++ /usr/local/bin/g++-dev
+sudo mv /usr/local/bin/c++ /usr/local/bin/c++-dev
 
 cd $ret_dir
 

@@ -137,7 +137,6 @@ if [ "$sync" = "true" ]; then
         sudo git clone https://gcc.gnu.org/git/gcc.git $gcc_src
         checkfail $? "git clone failed"
     else
-        pwd_tmp = $PWD
         cd $gcc_src
         sudo git pull
         checkfail $? "git pull failed"

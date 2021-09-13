@@ -22,7 +22,7 @@
 # OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION
 # WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
-openssl_src=/usr/src/openssl
+openssl_src=/usr/local/src/openssl
 build_dir=~/build
 bin_dir=$build_dir/openssl
 curr_dir=$PWD
@@ -83,7 +83,7 @@ checkfail $? "Unable to cd $bin_dir"
 ./config shared
 checkfail $? "config failed"
 
-make -j 4
+make -j 36
 checkfail $? "make failed"
 
 sudo make install

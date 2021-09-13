@@ -208,6 +208,7 @@ checkfail $? "\'ldconfig\' failed"
 sudo mv /usr/local/bin/gcc /usr/local/bin/gcc-dev
 sudo mv /usr/local/bin/g++ /usr/local/bin/g++-dev
 sudo mv /usr/local/bin/c++ /usr/local/bin/c++-dev
+sudo mv /usr/local/bin/cpp /usr/local/bin/cpp-dev
 
 cd $ret_dir
 

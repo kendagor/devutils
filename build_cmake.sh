@@ -53,6 +53,9 @@ checkfail() {
 if [ "$install" = "true" ]; then
     cc --version
     checkfail $? "Please install your preferred c, c++ compilers"
+
+    sudo apt install libssl-dev -y
+    checkfail $? "Failed to install libssl-dev"
 fi
 
 if [ "$sync" = "true" ]; then
@@ -79,7 +82,7 @@ checkfail $? "Couldn\'t locate the build directory: $cmake_build"
 $cmake_src/bootstrap --parallel=8
 checkfail $? "bootstrap failed"
 
-make -j 4
+make -j 36
 checkfail $? "make failed"
 
 sudo make install

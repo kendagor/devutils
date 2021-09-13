@@ -22,8 +22,9 @@
 # OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION
 # WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
-llvm_src=/usr/local/src/llvm
-llvm_build=~/build/llvm/build
+llvm_src_dir=/usr/local/src
+llvm_src=/usr/local/src/llvm-project
+llvm_build=~/build/llvm
 ret_dir=$PWD
 install=false
 sync=false
@@ -48,23 +49,15 @@ done
 checkfail() {
     if [ $1 -gt 0 ]; then
         echo $2
+        cd $ret_dir
         exit 1
     fi
     return
 }
 
 if [ "$install" = "true" ]; then
-    sudo apt-get install python2.7 -y
-    checkfail $? "Install python2.7 failed"
-
     sudo apt-get install python3 -y
     checkfail $? "Install python3 failed"
-
-    svn --version
-    if [ $? -gt 0 ]; then
-        sudo apt-get install subversion -y
-        checkfail $? "Install svn failed"
-    fi
 
     make --version
     if [ $? -gt 0 ]; then
@@ -88,66 +81,13 @@ fi
 if [ "$sync" = "true" ]; then
     ls -d $llvm_src
     if [ $? -gt 0 ]; then
-        sudo svn co http://llvm.org/svn/llvm-project/llvm/trunk $llvm_src
+        cd $llvm_src_dir
+        sudo git clone https://github.com/llvm/llvm-project.git
         checkfail $? "llvm sync failed"
-
-        cd $llvm_src/tools
-        checkfail $? "$llvm_src/tools directory not found"
-
-        sudo svn co http://llvm.org/svn/llvm-project/cfe/trunk clang
-        checkfail $? "clang sync failed"
-
-        cd $llvm_src/tools/clang/tools
-        checkfail $? "Directory not found $llvm_src/tools/clang/tools"
-
-        sudo svn co http://llvm.org/svn/llvm-project/clang-tools-extra/trunk extra
-        checkfail $? "clang-tools-extra sync failed"
-
-        cd $llvm_src/projects
-        checkfail $? "$llvm_src/projects directory not found"
-
-        sudo svn co http://llvm.org/svn/llvm-project/libcxx/trunk libcxx
-        checkfail $? "libcxx sync failed"
-
-        sudo svn co http://llvm.org/svn/llvm-project/libcxxabi/trunk libcxxabi
-        checkfail $? "libcxxabi sync failed"
-
-        sudo svn co http://llvm.org/svn/llvm-project/compiler-rt/trunk compiler-rt
-        checkfail $? "compiler-rt sync failed"
     else
         cd $llvm_src
-        sudo svn update
+        sudo git pull
         checkfail $? "llvm sync failed"
-
-        cd $llvm_src/tools/clang
-        checkfail $? "$llvm_src/tools/clang directory not found"
-
-        sudo svn update
-        checkfail $? "clang sync failed"
-
-        cd $llvm_src/tools/clang/tools/extra
-        checkfail $? "Directory not found $llvm_src/tools/clang/tools/extra"
-
-        sudo svn update
-        checkfail $? "clang-tools-extra sync failed"
-
-        cd $llvm_src/projects/libcxx
-        checkfail $? "$llvm_src/projects/libcxx directory not found"
-
-        sudo svn update
-        checkfail $? "libcxx sync failed"
-
-        cd $llvm_src/projects/libcxxabi
-        checkfail $? "$llvm_src/projects/libcxxabi directory not found"
-
-        sudo svn update
-        checkfail $? "libcxxabi sync failed"
-
-        cd $llvm_src/projects/compiler-rt
-        checkfail $? "$llvm_src/projects/compiler_rt directory not found"
-
-        sudo svn update
-        checkfail $? "compiler-rt sync failed"
     fi
 fi
 
@@ -158,9 +98,9 @@ checkfail $? "Build directory creation failed"
 cd $llvm_build
 checkfail $? "Unable to cd $llvm_build"
 
-cmake -DLLVM_ENABLE_PROJECTS="clang;libcxxlibcxxabi" \
+cmake -DLLVM_ENABLE_PROJECTS="clang;clang-tools-extra;libcxx;libcxxabi;libunwind;lldb" \
       -G "Unix Makefiles" \
-      -DCMAKE_BUILD_TYPE=Release $llvm_src
+      -DCMAKE_BUILD_TYPE=Release $llvm_src/llvm
 checkfail $? "cmake failed"
 
 make -j 36
@@ -168,6 +108,11 @@ checkfail $? "\"make\" failed"
 
 sudo make install
 checkfail $? "\"sudo make install\" failed"
+
+sudo ldconfig
+
+sudo mv /usr/local/bin/clang /usr/local/bin/clang-dev
+sudo mv /usr/local/bin/clang++ /usr/local/bin/clang++-dev
 
 if [ "$alt" = true ]; then
     path_gcc=$(which gcc)

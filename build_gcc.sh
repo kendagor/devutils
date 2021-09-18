@@ -62,7 +62,7 @@ if [ "$install" = "true" ]; then
     fi
 
     perl --version
-    if [ $? -gt 0 [; then
+    if [ $? -gt 0 ]; then
         sudo apt install perl -y
         checkfail $? "Install perl failed"
     fi

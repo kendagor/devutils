@@ -82,7 +82,7 @@ checkfail $? "Couldn\'t locate the build directory: $cmake_build"
 $cmake_src/bootstrap --parallel=8
 checkfail $? "bootstrap failed"
 
-make -j 36
+make -j $(nproc)
 checkfail $? "make failed"
 
 sudo make install

@@ -83,7 +83,7 @@ checkfail $? "Unable to cd $bin_dir"
 ./config shared
 checkfail $? "config failed"
 
-make -j 36
+make -j $(nproc)
 checkfail $? "make failed"
 
 sudo make install

@@ -80,7 +80,7 @@ checkfail $? "Unable to copy src links to $bin_dir"
 cd $bin_dir
 checkfail $? "Unable to cd $bin_dir"
 
-make -j 8
+make -j $(nproc)
 checkfail $? "Build failed"
 
 sudo make install

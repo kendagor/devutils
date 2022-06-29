@@ -103,7 +103,7 @@ cmake -DLLVM_ENABLE_PROJECTS="clang;clang-tools-extra;libcxx;libcxxabi;libunwind
       -DCMAKE_BUILD_TYPE=Release $llvm_src/llvm
 checkfail $? "cmake failed"
 
-make -j 36
+make -j $(nproc)
 checkfail $? "\"make\" failed"
 
 sudo make install

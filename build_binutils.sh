@@ -66,7 +66,7 @@ checkfail $? "Unable to cd $build_binutils_dir"
 ./configure
 checkfail $? "configure failed"
 
-make -j 4
+make -j $(nproc)
 checkfail $? "make failed"
 
 sudo make install

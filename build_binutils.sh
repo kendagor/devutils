@@ -72,5 +72,10 @@ checkfail $? "make failed"
 sudo make install
 checkfail $? "make install failed"
 
+sudo mv /usr/local/bin/ld /usr/local/bin/ld-dev
+
+echo Renamed newly built linker to ld-dev in /usr/local/bin/ld-dev
+echo Use update-alternatives to install an option for linker 'ld' at /usr/local/bin/ld-dev
+
 cd $curr_dir
 

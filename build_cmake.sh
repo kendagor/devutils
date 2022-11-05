@@ -79,7 +79,7 @@ checkfail $? "Failed: mkdir $cmake_build"
 cd $cmake_build
 checkfail $? "Couldn\'t locate the build directory: $cmake_build"
 
-$cmake_src/bootstrap --parallel=8
+$cmake_src/bootstrap --parallel=$(nproc)
 checkfail $? "bootstrap failed"
 
 make -j $(nproc)

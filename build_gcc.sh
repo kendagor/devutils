@@ -121,9 +121,6 @@ if [ "$install" = "true" ]; then
     sudo apt install libisl-dev -y
     checkfail $? "Install libisl-dev failed"
 
-    sudo apt install libc6-dev-x32 -y
-    checkfail $? "install libc6-dev-x32 failed"
-
     flex --version
     if [ $? -gt 0 ]; then
         sudo apt install flex -y
@@ -209,6 +206,11 @@ sudo mv /usr/local/bin/gcc /usr/local/bin/gcc-dev
 sudo mv /usr/local/bin/g++ /usr/local/bin/g++-dev
 sudo mv /usr/local/bin/c++ /usr/local/bin/c++-dev
 sudo mv /usr/local/bin/cpp /usr/local/bin/cpp-dev
+
+echo --- build complete. Optional step:
+echo     sudo update-alternatives --install /usr/bin/cc cc /usr/bin/gcc 40 --slave /usr/bin/c++ c++ /usr/bin/g++ --slave /usr/bin/cpp cpp /usr/bin/gcc-cpp
+echo     sudo update-alternatives --install /usr/bin/cc cc /usr/local/bin/gcc-dev 60 --slave /usr/bin/c++ c++ /usr/local/bin/g++-dev --slave /usr/bin/cpp cpp /usr/local/bin/cpp-dev
+echo -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
 cd $ret_dir
 

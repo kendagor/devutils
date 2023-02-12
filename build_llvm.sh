@@ -98,7 +98,8 @@ checkfail $? "Build directory creation failed"
 cd $llvm_build
 checkfail $? "Unable to cd $llvm_build"
 
-cmake -DLLVM_ENABLE_PROJECTS="clang;clang-tools-extra;libcxx;libcxxabi;libunwind;lldb" \
+cmake -DLLVM_ENABLE_PROJECTS="clang;clang-tools-extra;lld;lldb" \
+      -DLLVM_ENABLE_RUNTIMES="libcxx;libcxxabi;libunwind;openmp" \
       -G "Unix Makefiles" \
       -DCMAKE_BUILD_TYPE=Release $llvm_src/llvm
 checkfail $? "cmake failed"

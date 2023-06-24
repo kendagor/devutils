@@ -3,4 +3,6 @@ alias ping='ping -c 3'
 alias ping6='ping6 -c 3'
 alias rm='rm -I'
 alias diff='diff -sEI --suppress-common-lines'
-
+alias makej='make -j$(nproc)'
+alias grepcpp='grep -rin $1 --include=*.h --include=*.hpp --include=*.cpp --include=*.c'
+alias grepcmake='grep -rin $1 --include=CMakeLists.txt --include=*.cmake'

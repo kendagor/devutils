@@ -207,10 +207,31 @@ sudo mv /usr/local/bin/g++ /usr/local/bin/g++-dev
 sudo mv /usr/local/bin/c++ /usr/local/bin/c++-dev
 sudo mv /usr/local/bin/cpp /usr/local/bin/cpp-dev
 
+echo -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 echo --- build complete. Optional step:
 echo     sudo update-alternatives --install /usr/bin/cc cc /usr/bin/gcc 40 --slave /usr/bin/c++ c++ /usr/bin/g++ --slave /usr/bin/cpp cpp /usr/bin/gcc-cpp
 echo     sudo update-alternatives --install /usr/bin/cc cc /usr/local/bin/gcc-dev 60 --slave /usr/bin/c++ c++ /usr/local/bin/g++-dev --slave /usr/bin/cpp cpp /usr/local/bin/cpp-dev
 echo -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+echo Typical output after build in case you missed it:
+echo ----------------------------------------------------------------------
+echo Libraries have been installed in:
+echo   /usr/local/lib/../lib64
+echo
+echo If you ever happen to want to link against installed libraries
+echo in a given directory, LIBDIR, you must either use libtool, and
+echo specify the full pathname of the library, or use the `-LLIBDIR'
+echo flag during linking and do at least one of the following:
+echo   - add LIBDIR to the `LD_LIBRARY_PATH' environment variable
+echo      during execution
+echo   - add LIBDIR to the `LD_RUN_PATH' environment variable
+echo     during linking
+echo   - use the `-Wl,-rpath -Wl,LIBDIR' linker flag
+echo   - have your system administrator add LIBDIR to `/etc/ld.so.conf'
+echo
+echo See any operating system documentation about shared libraries for
+echo more information, such as the ld(1) and ld.so(8) manual pages.
+echo ----------------------------------------------------------------------
+
 
 cd $ret_dir
 

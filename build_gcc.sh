@@ -179,8 +179,10 @@ $gcc_src/configure $new_prefix \
     --with-isl \
     --disable-werror \
     --disable-bootstrap \
-    --disable-multilib
-
+    --disable-multilib \
+    CFLAGS="-fPIE" \
+    CXXFLAGS="-fPIE" \
+    LDFLAGS="-pie"
 
 checkfail $? "\'configure\' failed"
 

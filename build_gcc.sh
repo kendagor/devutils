@@ -29,6 +29,7 @@ install=false
 sync=false
 ld_conf_src=/etc/ld.so.conf.d/x86_64-linux-gnu.conf
 prefix_override=false
+rename=true
 
 while [ $# -gt 0 ]; do
     case $1 in
@@ -41,6 +42,12 @@ while [ $# -gt 0 ]; do
             ;;
         -p | --prefix)
             prefix_override=true
+            ;;
+        -r | --rename)
+            rename=true
+            ;;
+        -n | --no-rename)
+            rename=false
             ;;
     esac
     shift
@@ -201,18 +208,26 @@ checkfail $? "\'make install\' failed"
 #     sudo sed -i "/^# Multiarch support$/a/usr/local/lib64" $ld_conf_src
 # fi
 
-sudo ldconfig
-checkfail $? "\'ldconfig\' failed"
+if [ "$rename" = "true" ]; then
+    echo Renaming /usr/local/bin/gcc to /usr/local/bin/gcc-dev
+    sudo mv /usr/local/bin/gcc /usr/local/bin/gcc-dev
 
-sudo mv /usr/local/bin/gcc /usr/local/bin/gcc-dev
-sudo mv /usr/local/bin/g++ /usr/local/bin/g++-dev
-sudo mv /usr/local/bin/c++ /usr/local/bin/c++-dev
-sudo mv /usr/local/bin/cpp /usr/local/bin/cpp-dev
+    echo Renaming /usr/local/bin/g++ to /usr/local/bin/g++-dev
+    sudo mv /usr/local/bin/g++ /usr/local/bin/g++-dev
 
-echo -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
-echo --- build complete. Optional step:
-echo     sudo update-alternatives --install /usr/bin/cc cc /usr/bin/gcc 40 --slave /usr/bin/c++ c++ /usr/bin/g++ --slave /usr/bin/cpp cpp /usr/bin/gcc-cpp
-echo     sudo update-alternatives --install /usr/bin/cc cc /usr/local/bin/gcc-dev 60 --slave /usr/bin/c++ c++ /usr/local/bin/g++-dev --slave /usr/bin/cpp cpp /usr/local/bin/cpp-dev
+    echo Renaming /usr/local/bin/c++ to /usr/local/bin/c++-dev
+    sudo mv /usr/local/bin/c++ /usr/local/bin/c++-dev
+
+    echo Renaming /usr/local/bin/cpp to /usr/local/bin/cpp-dev
+    sudo mv /usr/local/bin/cpp /usr/local/bin/cpp-dev
+
+    echo -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+    echo --- build complete. Recommended next step to utilize renamed binaries:
+    echo     sudo update-alternatives --install /usr/bin/cc cc /usr/bin/gcc 40 --slave /usr/bin/c++ c++ /usr/bin/g++ --slave /usr/bin/cpp cpp /usr/bin/gcc-cpp
+    echo     sudo update-alternatives --install /usr/bin/cc cc /usr/local/bin/gcc-dev 60 --slave /usr/bin/c++ c++ /usr/local/bin/g++-dev --slave /usr/bin/cpp cpp /usr/local/bin/cpp-dev
+    echo -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+fi
+
 echo -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 echo Typical output after build in case you missed it:
 echo ----------------------------------------------------------------------
@@ -234,6 +249,8 @@ echo See any operating system documentation about shared libraries for
 echo more information, such as the 'ld(1)' and 'ld.so(8)' manual pages.
 echo ----------------------------------------------------------------------
 
+sudo ldconfig
+checkfail $? "\'ldconfig\' failed"
 
 cd $ret_dir
 

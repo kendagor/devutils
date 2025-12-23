@@ -8,6 +8,7 @@ build_binutils_dir=$build_dir/binutils-gdb
 curr_dir=$PWD
 install=false
 sync=false
+rename=false
 
 while [ $# -gt 0 ]; do
     case $1 in
@@ -17,6 +18,9 @@ while [ $# -gt 0 ]; do
             ;;
         -s | --sync)
             sync=true
+            ;;
+        -r | --rename)
+            rename=true
             ;;
     esac
     shift
@@ -76,39 +80,48 @@ checkfail $? "configure failed"
 make -j $(nproc)
 checkfail $? "make failed"
 
+echo Installing binutils-gdb binaries. \
+     Note: sometimes if you see a missing library error, \
+     you can resolve the issue by running 'sudo ldconfig' \
+     to update the shared library cache.
+
 sudo make install
+if [ $1 -gt 0 ]; then
+    sudo ldconfig
+    sudo make install
+fi
 checkfail $? "make install failed"
 
-if [ -e /usr/bin/gdb ]; then
-    echo Please note: gdb is also installed at /usr/bin/gdb. /usr/local/bin/gdb is expected to take preference.
-    # sudo mv /usr/local/bin/gdb /usr/local/bin/gdb-dev
+if [ "$rename" = "true" ]; then
+    echo Renaming /usr/local/bin/gdb to /usr/local/bin/gdb-dev
+    sudo mv /usr/local/bin/gdb /usr/local/bin/gdb-dev
+
+    echo  Renaming ld to ld-dev
+    sudo mv /usr/local/bin/ld /usr/local/bin/ld-dev
+
+    echo Renaming /usr/local/bin/as to /usr/local/bin/as-dev 
+    sudo mv /usr/local/bin/ld.gold /usr/local/bin/ld-dev.gold
+
+    echo Renaming /usr/local/bin/ld.bfd to /usr/local/bin/ld-dev.bfd
+    sudo mv /usr/local/bin/ld.bfd /usr/local/bin/ld-dev.bfd
+
+    echo Renaming /usr/local/bin/as /usr/local/bin/as-dev
+    sudo mv /usr/local/bin/as /usr/local/bin/as-dev
+
+    echo Helpful commands to utilize renamed binaries:
+    echo ---------------------------------------------------------------------------------------
+    echo sudo update-alternatives --install /usr/bin/ld ld /usr/bin/x86_64-linux-gnu-ld 20 \
+    --slave /usr/bin/ld.gold ld.gold /usr/bin/x86_64-linux-gnu-ld.gold \
+    --slave /usr/bin/as as /usr/bin/x86_64-linux-gnu-as
+    echo ---------------------------------------------------------------------------------------
+    echo sudo update-alternatives --install /usr/bin/ld ld /usr/local/bin/ld-dev 40 \
+    --slave /usr/bin/ld.gold ld.gold /usr/local/bin/ld-dev.gold \
+    --slave /usr/bin/as as /usr/local/bin/as-dev
+    echo ---------------------------------------------------------------------------------------
 fi
 
-if [ ! -L /usr/local/bin/ld ]; then
-    echo '/usr/local/bin/ld' was expected to be symbolic link to ld.bfm!
-fi
-
-echo  Renaming ld to ld-dev
-sudo mv /usr/local/bin/ld /usr/local/bin/ld-dev
-
-echo Renaming /usr/local/bin/as to /usr/local/bin/as-dev 
-sudo mv /usr/local/bin/ld.gold /usr/local/bin/ld-dev.gold
-
-echo Renaming /usr/local/bin/ld.bfd to /usr/local/bin/ld-dev.bfd
-sudo mv /usr/local/bin/ld.bfd /usr/local/bin/ld-dev.bfd
-
-echo Renaming /usr/local/bin/as /usr/local/bin/as-dev
-sudo mv /usr/local/bin/as /usr/local/bin/as-dev
-
-echo Helpful commands:
-echo --------------------------------------------------------------------------------------
-echo sudo update-alternatives --install /usr/bin/ld ld /usr/bin/x86_64-linux-gnu-ld 20 \
---slave /usr/bin/ld.gold ld.gold /usr/bin/x86_64-linux-gnu-ld.gold \
---slave /usr/bin/as as /usr/bin/x86_64-linux-gnu-as
-echo ---------------------------------------------------------------------------------------
-echo sudo update-alternatives --install /usr/bin/ld ld /usr/local/bin/ld-dev 40 \
- --slave /usr/bin/ld.gold ld.gold /usr/local/bin/ld-dev.gold \
- --slave /usr/bin/as as /usr/local/bin/as-dev
+sudo ldconfig
+checkfail $? "\'ldconfig\' failed"
 
 cd $curr_dir
 

@@ -2,7 +2,7 @@
 # Elisha Kendagor
 # Local script for building binutils-gdb
 
-gdb_src=/src/binutils-gdb
+gdb_src=/data/src/binutils-gdb
 build_dir=~/build
 build_binutils_dir=$build_dir/binutils-gdb
 curr_dir=$PWD

@@ -91,13 +91,14 @@ if [ "$sync" = "true" ]; then
     fi
 fi
 
-rm -r $llvm_build
+# rm -r $llvm_build
 mkdir -p $llvm_build
 checkfail $? "Build directory creation failed"
 
 cd $llvm_build
 checkfail $? "Unable to cd $llvm_build"
 
+# cmake -DLLVM_ENABLE_PROJECTS="clang;clang-tools-extra;lld" \
 cmake -DLLVM_ENABLE_PROJECTS="clang;clang-tools-extra;lld;lldb" \
       -DLLVM_ENABLE_RUNTIMES="libcxx;libcxxabi;libunwind;openmp" \
       -G "Unix Makefiles" \
@@ -110,10 +111,9 @@ checkfail $? "\"make\" failed"
 sudo make install
 checkfail $? "\"sudo make install\" failed"
 
-sudo ldconfig
-
 sudo mv /usr/local/bin/clang /usr/local/bin/clang-dev
-sudo mv /usr/local/bin/clang++ /usr/local/bin/clang++-dev
+
+sudo ldconfig
 
 if [ "$alt" = true ]; then
     path_gcc=$(which gcc)

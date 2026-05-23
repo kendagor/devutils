@@ -13,7 +13,9 @@ acl "internal-v6" {
 };
 
 After editing, validate syntax:
+```sh
 named-checkconf
+```
 
 ---
 
@@ -29,7 +31,9 @@ Example SOA bump:
         86400 )     ; minimum
 
 Validate the zone:
+```sh
 named-checkzone home.lan /etc/bind/zones/home.lan
+```
 
 ---
 
@@ -37,7 +41,9 @@ named-checkzone home.lan /etc/bind/zones/home.lan
 Update PTR entries to reflect the new IPv6 prefix and increment the SOA serial.
 
 Validate the reverse zone:
+```sh
 named-checkzone ipv6.home.lan.rev /etc/bind/zones/ipv6.home.lan.rev
+```
 
 ---
 
@@ -48,16 +54,22 @@ Example:
 also-notify { 2001:db8:abcd:1234::2; };  // update to new secondary IPv6
 
 Validate configuration:
+```sh
 named-checkconf
+```
 
 ---
 
 ## 5. Reload Primary DNS
 Apply all changes on the primary:
+```sh
 sudo rndc reload
+```
 
 Check logs for errors:
+```sh
 sudo journalctl -u bind9 -n 50
+```
 
 ---
 
@@ -65,13 +77,17 @@ sudo journalctl -u bind9 -n 50
 On the secondary:
 - Update `named.conf.local` so the `masters { ... }` block references the primary’s new IPv6 address.
 - Reload configuration:
+```sh
 sudo rndc reload
+```
 
 ---
 
 ## 7. Trigger Notify from Primary
 Force the primary to notify the secondary of zone changes:
+```sh
 sudo rndc notify home.lan
+```
 
 Confirm notify events in logs.
 
@@ -79,18 +95,24 @@ Confirm notify events in logs.
 
 ## 8. Refresh Secondary
 On the secondary, explicitly request a refresh:
+```sh
 sudo rndc refresh
+```
 
 Check that the new serial is pulled:
+```sh
 sudo rndc zonestatus home.lan
+```
 
 ---
 
 ## Recommended Additional Safety Checks
 - Confirm both servers now serve the same SOA serial.
 - Use `dig` to verify forward and reverse resolution:
+```sh
 dig AAAA host.home.lan @primary
 dig -x 2001:db8:abcd:1234::50 @secondary
+```
 - Ensure firewall rules allow DNS/IPv6 traffic between primary and secondary.
 
 ---
